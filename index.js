@@ -3,8 +3,10 @@ const { google } = require('googleapis');
 const { OAuth2Client } = require('google-auth-library');
 const config = require('./secret.json');
 
+//started express server
 const app = express();
 const port = 3000;
+
 
 const CLIENT_ID = config.web.client_id;
 const CLIENT_SECRET = config.web.client_secret;
@@ -13,6 +15,7 @@ const REDIRECT_URI = 'http://localhost:3000/oauth/callback';
 const oAuth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 const userTokens = []; // Array to store user tokens
 
+//define routes
 app.get('/', (req, res) => {
   res.send('Welcome to My Google Drive App!');
 });
@@ -73,6 +76,7 @@ app.get('/upload', (req, res) => {
   });
 });
 
+// started server on port 3000
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
