@@ -1,13 +1,23 @@
 const express = require('express');
 const { google } = require('googleapis');
+
+//added jwt bcrypt mongoose  
+const jwt=require('jsonwebtoken')
+const bcrypt=require('bcrypt')
+const mongoose=require('mongoose')
+const bodyParser=require('body-parser');
+require('dotenv').config();
 const { OAuth2Client } = require('google-auth-library');
 const config = require('./secret.json');
+const db_string=process.env.DB_CONNECTION_STRING;
+
 
 //started express server
 const app = express();
 const port = 3000;
 
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}))
 const CLIENT_ID = config.web.client_id;
 const CLIENT_SECRET = config.web.client_secret;
 const REDIRECT_URI = 'http://localhost:3000/oauth/callback';
@@ -51,6 +61,7 @@ app.get('/upload', (req, res) => {
   const drive = google.drive({ version: 'v3', auth: userOAuth2Client });
   //mydrive folder id
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+  console.log(folderId);
   const fileMetadata = {
     name: 'example.txt',
     parents: [folderId],
@@ -77,6 +88,10 @@ app.get('/upload', (req, res) => {
 });
 
 // started server on port 3000
+//made a connection to database
+mongoose.connect(db_string)
+.then(console.log("Database Successfully Connected"))
+.catch(err=> console.log(err));
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
