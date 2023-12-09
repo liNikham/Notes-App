@@ -1,7 +1,6 @@
 const mongoose=require('mongoose')
 // defines user schema
 const userSchema = new mongoose.Schema({
-    username: String,
     email: {
       type: String,
       required: true,

@@ -1,6 +1,6 @@
 const express = require('express');
 const { google } = require('googleapis');
-
+const userRoutes=require('./routes/userRoutes');
 //added jwt bcrypt mongoose  
 const jwt=require('jsonwebtoken')
 const bcrypt=require('bcrypt')
@@ -29,7 +29,7 @@ const userTokens = []; // Array to store user tokens
 app.get('/', (req, res) => {
   res.send('Welcome to My Google Drive App!');
 });
-
+app.use(userRoutes);
 app.get('/login', (req, res) => {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
