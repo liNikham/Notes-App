@@ -1,8 +1,21 @@
+
 const jwt=require('jsonwebtoken');
-const jwtSecret=process.env.JWT_Secret;
 const bcrypt=require('bcrypt');
 const nodemailer=require('nodemailer');
 const User=require('../models/userSchema');
+const crypto=require('crypto');
+const dotenv = require("dotenv")
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// email transporter
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+        user: 'nikhil.212708111@vcet.edu.in',
+        pass:process.env.SMTP_SECRET,
+    }
+  });
 // after clicking signUp button
 exports.postSignUp=async (req,res)=>{
     try{
@@ -35,14 +48,7 @@ exports.postSignUp=async (req,res)=>{
 
  
     // mailing OTP to the user
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        auth: {
-            user: 'nikhil.212708111@vcet.edu.in',
-            pass: 'hzhquqgmcajxiqkz'
-        }
-      });
+
 
     const mail={
         from:'nikhil.212708111@vcet.edu.in',
@@ -71,6 +77,7 @@ exports.verifyOtp=async(req,res)=>{
         if(user && !user.verified){
             if(Date.now()-user.timestamp<=300*1000){
                 user.verified=true;
+                user.otp=undefined;
                 await user.save();
                 res.json({message:"Email verified. You can now log in."})
             }
@@ -114,3 +121,74 @@ exports.postLogin=async(req,res)=>{
     }
 
 }
+
+// allowing user to reset password in case they forgot them
+exports.forgotPassword=async(req,res)=>{
+    try{
+        const {email}=req.body;
+        const user=await User.findOne({email});
+        if(!user){
+            return res.status(404).json({message:'User Not Found'});
+
+        }
+        // generating token for reseting password
+        const resetToken=crypto.randomBytes(20).toString('hex');
+        user.resetPasswordToken=resetToken;
+        // Token expires in 1 hour
+        user.resetPasswordTokenExpiry=Date.now()+3600000;
+        await user.save();
+        const resetUrl=`http://localhost:3000/reset-password?token=${resetToken}`;
+        await transporter.sendMail({
+            from:'nikhil.212708111@vcet.edu.in',
+            to:email,
+            subject:'Password Reset',
+            text:`Click the link to reset your password :${resetUrl}`,
+        })
+        res.status(200).json({message:'Password reset email sent successfully'});
+
+
+
+
+    } catch(err){
+        console.log(err);
+        res.status(500).json({message:err.message})
+    }
+}
+// validating reset password token
+ exports.resetPassword=async(req,res)=>{
+     try{
+        const token=req.query.token;
+        const {newPassword,confirmPassword}=req.body;
+        const user=await User.findOne({resetPasswordToken:token});
+        if(!user){
+            return res.status(400).json({message:'Invalid or expired reset token'});
+
+        }
+        if(newPassword!==confirmPassword){
+          return res.status(400).json({message:'Passwords do not match'});
+        }
+        const salt=await bcrypt.genSalt(10);
+        const hashedPassword=await bcrypt.hash(newPassword,salt);
+
+      if(Date.now()-user.resetPasswordTokenExpiry<=3600000){
+        const userData=await User.findByIdAndUpdate({
+            _id:user._id},{
+                $set:{
+                    password:hashedPassword
+                }
+            },{new:true}
+        );
+        user.resetPasswordToken=undefined;
+        user.resetPasswordToken-undefined;
+        res.status(200).send({msg:"User Password has been reset"});
+      }
+      else{
+        res.status(400).json({msg:"error resetting password"});
+      }
+       
+     } catch(err){
+        console.log(err);
+        res.status(500).json({message:err.message})
+     }
+    
+ }

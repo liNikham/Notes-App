@@ -10,7 +10,7 @@ require('dotenv').config();
 const { OAuth2Client } = require('google-auth-library');
 const config = require('./secret.json');
 const db_string=process.env.DB_CONNECTION_STRING;
-
+console.log(db_string);
 
 //started express server
 const app = express();

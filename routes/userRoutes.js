@@ -3,5 +3,7 @@ const router=express.Router();
 const userController=require('../controllers/userController');
 router.post('/signUp',userController.postSignUp);
 router.post('/loginUser',userController.postLogin);
+router.post('/forgotPassword',userController.forgotPassword)
+router.put('/reset-password',userController.resetPassword);
 router.post('/verify-otp',userController.verifyOtp);
 module.exports=router;
