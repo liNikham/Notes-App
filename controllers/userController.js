@@ -180,6 +180,7 @@ exports.postLogin=async(req,res)=>{
      }
     
  }
+// resending otp 
  exports.resendOTP=async(req,res)=>{
     const user=req.user;
     const db_user= await User.findOne({_id:user.userId});
