@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Folder List</title>
+</head>
+<body>
+  <h1>Folder List</h1>
+  <% if (folders.length === 0) { %>
+    <p>No folders available.</p>
+  <% } else { %>
+    <ul>
+      <% folders.forEach((folder) => { %>
+        <li>
+          <a href="/folder/<%= folder.id %>"><%= folder.name %></a>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+</body>
+</html>

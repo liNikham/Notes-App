@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>List</title>
+</head>
+<body>
+  <h1>Folder List</h1>
+  <% if (folders.length === 0) { %>
+    <p>No folders available.</p>
+  <% } else { %>
+    <ul>
+      <% folders.forEach((folder) => { %>
+        <li>
+          <a href="/folder/<%= folder.id %>"><%= folder.name %></a>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+
+  <h1>File List</h1>
+  <% if (files.length === 0) { %>
+    <p>No files uploaded yet.</p>
+  <% } else { %>
+    <ul>
+      <% files.forEach((file) => { %>
+        <% if (file.mimeType !== 'application/vnd.google-apps.folder') { %>
+          <li>
+            <%= file.name %>
+            <a href="/download/<%= file.id %>">Download</a>
+          </li>
+        <% } %>
+      <% }); %>
+    </ul>
+  <% } %>
+</body>
+</html>
