@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Folder</title>
+</head>
+<body>
+  <h1>Create a New Folder</h1>
+  <form action="/create-folder/<%= parentFolderId %>" method="post">
+    <label >Folder Name:</label>
+    <input type="text" name="folderName"  required>
+    <button type="submit">Create Folder</button>
+  </form>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!-- folderFiles.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Folder Files</title>
+</head>
+<body>
+  <h1>Files in  Folder</h1>
+  <!-- File upload form -->
+  <form action="/folder/<%= folderId %>/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file">
+    <button type="submit">Upload</button>
+  </form>
+
+  <% if (files.length === 0) { %>
+    <p>No files in this folder.</p>
+  <% } else { %>
+    <ul>
+      <% files.forEach((file) => { %>
+        <li>
+          <%= file.name %>
+          <a href="/download/<%= file.id %>">Download</a>
+        </li>
+      <% }); %>
+    </ul>
+  <% } %>
+</body>
+</html>
